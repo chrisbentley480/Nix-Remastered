@@ -74,7 +74,7 @@ function checkUser(){
 	if (stage!=1){return;}
 	
 	//Query server
-	var response=1;
+	var response=0;
 	
 	
 	$('#advancedBtn').show();

@@ -2,6 +2,7 @@ var username="";
 var user_password="";
 var stage=0;
 var padlock="";
+var friend="";
 
 function login(){
 	
@@ -23,12 +24,12 @@ function login(){
 	setTimeout(function(){
 		$('#title').removeClass("titleCollapse"); 
 		$('#title').addClass("titleExpand");  
-	}, 1000);
+	}, 500);
 	setTimeout(function(){
 		$('#spacer-2').addClass("grow-spacer-2"); 
 		$('#password').removeClass("passwordCollapse");
 		$('#password').addClass("passwordExpand");  
-	}, 1500);
+	}, 1000);
 	setTimeout(function(){
 		$("#password").children().show();
 		$('#advancedBtn').hide();
@@ -36,13 +37,12 @@ function login(){
 		$('#passwordDiv').hide();
 		$('#passTitle').text(username);	
 		stage=1;
-	}, 2200);
+	}, 1500);
 	
 	setTimeout(function(){
 		$('#password').addClass("passwordExpand-Set");  
-		
 		checkUser();
-	}, 3000);
+	}, 2000);
 
 }
 
@@ -297,6 +297,56 @@ function openInterface(){
 	$('#spacer-2').removeClass("grow-spacer-2"); 
 	$('#spacer-2').addClass("grow-spacer-3"); 
 	//Re-arrange the UI and add contacts/messageUI/area to type and anything else needed
+	setTimeout(function(){
+		$("#subWindowContainer").removeClass("hidden"); 
+		//$("#subWindowContainer").children().show();
+		$("#contactWindow").removeClass("hidden"); 
+		
+	}, 1000);
+	
+	
+	
 	
 }
+
+function addContact(){
+	
+	//check if user exists
+	var response=0;
+	
+	if (response){
+		
+		//is user duplicate?
+		
+		//if not, add new div
+		
+		
+	}else{
+		alert("User does not exist");
+	}
+	
+	
+}
+
+
+function messageContact(newFriend){
+	friend=newFriend;
+	$("#messageWindow").removeClass("hidden"); 
+	$("#messageTitle").text(friend);
+	$("#contactWindow").children().removeClass("active");
+	$("#contactUser"+friend).addClass("active");
+
+	
+}
+
+function removeContact(){
+	//make custom dialog
+	
+	
+	alert("are you sure?")
+	alert("Do you want to remove messages from the server?");
+	
+	
+}
+
 

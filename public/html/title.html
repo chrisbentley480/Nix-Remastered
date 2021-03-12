@@ -16,11 +16,145 @@
 			</div>
 			<div id="login">
 				<div class="title-card-2">Login or Register by entering a username below</div>
-				<input class="input-1"></input>
+				<input id="username" class="input-1"></input>
+				<div id="usernameError"class="title-card-2 hidden error" >Username must be less than 30 characters</div>
 				<button class="button-1" type="button" onclick="login()">Get Started!</button> 
 			</div>
 			<div id="spacer-2"></div>
 			<div id="password">
+				
+				<div id ="passTitle"class="title-card-4 hidden"><b></b></div>
+			<div id="server-stat"class="title-card-3 hidden">Querying server</div>
+			<div id="passwordDiv" class="hidden">Password: <input type="password" id="passwordInput" class="input-1"></input></div>
+			<button id="continueBtn" class="button-2 hidden" type="button" onclick="generatePadlock()">Continue</button> 
+			<button id="advancedBtn" class="button-2 hidden" type="button" onclick="showOptions()">Advanced Connect</button> 
+			<button  class="button-2 hidden" type="button" onclick="reverseLogin()">Back</button> 
+			</div>
+			<div id="padlock">
+				<div class="title-card-1 hidden centeredFlex"><b>Generating Padlock</b></div>
+				 <img class="hidden"src="assets/load.gif" alt="loading..."> 
+				<div class="title-card-3 hidden"><b>This may take a moment</b></div>
+			</div>
+			<div id="padlock2">
+				<div class="title-card-1 hidden centeredFlex"><b>Padlock</b></div>
+				<div id="bigLock" class="hidden">
+				
+				<table class="table " id="padlock" >
+    <tr><td><button class="bitbox" id="1" onClick="buttonEvent(this.id)">a</button></td>
+		<td><button class="bitbox" id="2" onClick="buttonEvent(this.id)">W</button></td>
+		<td><button class="bitbox" id="3" onClick="buttonEvent(this.id)">^</button></td>
+		<td><button class="bitbox" id="4" onClick="buttonEvent(this.id)">9</button></td>
+		<td><button class="bitbox" id="5" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="6" onClick="buttonEvent(this.id)">C</button></td>
+		<td><button class="bitbox" id="7" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="8" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="9" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="10" onClick="buttonEvent(this.id)">1</button></td>
+	</tr>
+ <tr><td><button class="bitbox" id="11" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="12" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="13" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="14" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="15" onClick="buttonEvent(this.id)">b</button></td>
+		<td><button class="bitbox" id="16" onClick="buttonEvent(this.id)">%</button></td>
+		<td><button class="bitbox" id="17" onClick="buttonEvent(this.id)">5</button></td>
+		<td><button class="bitbox" id="18" onClick="buttonEvent(this.id)">d</button></td>
+		<td><button class="bitbox" id="19" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="20" onClick="buttonEvent(this.id)"></button></td>
+	</tr> <tr><td><button class="bitbox" id="21" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="22" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="23" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="24" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="25" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="26" onClick="buttonEvent(this.id)">3</button></td>
+		<td><button class="bitbox" id="27" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="28" onClick="buttonEvent(this.id)">D</button></td>
+		<td><button class="bitbox" id="29" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="30" onClick="buttonEvent(this.id)"></button></td>
+		
+	</tr> <tr><td><button class="bitbox" id="31" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="32" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="33" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="34" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="35" onClick="buttonEvent(this.id)">n</button></td>
+		<td><button class="bitbox" id="36" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="37" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="38" onClick="buttonEvent(this.id)">#</button></td>
+		<td><button class="bitbox" id="39" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="40" onClick="buttonEvent(this.id)"></button></td>
+		
+	</tr> <tr><td><button class="bitbox" id="41" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="42" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="43" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="44" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="45" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="46" onClick="buttonEvent(this.id)">2</button></td>
+		<td><button class="bitbox" id="47" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="48" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="49" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="50" onClick="buttonEvent(this.id)"></button></td>
+		
+	</tr> <tr><td><button class="bitbox" id="51" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="52" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="53" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="54" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="55" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="56" onClick="buttonEvent(this.id)">8</button></td>
+		<td><button class="bitbox" id="57" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="58" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="59" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="60" onClick="buttonEvent(this.id)"></button></td>
+		
+	</tr> <tr><td><button class="bitbox" id="61" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="62" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="63" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="64" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="65" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="66" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="67" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="68" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="69" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="70" onClick="buttonEvent(this.id)"></button></td>
+		
+	</tr> <tr><td><button class="bitbox" id="71" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="72" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="73" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="74" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="75" onClick="buttonEvent(this.id)">4</button></td>
+		<td><button class="bitbox" id="76" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="77" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="78" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="79" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="80" onClick="buttonEvent(this.id)"></button></td>
+		
+	</tr> <tr><td><button class="bitbox" id="81" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="82" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="83" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="84" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="85" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="86" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="87" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="88" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="89" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="90" onClick="buttonEvent(this.id)"></button></td>
+		
+	</tr> <tr><td><button class="bitbox" id="91" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="92" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="93" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="94" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="95" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="96" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="97" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="98" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="99" onClick="buttonEvent(this.id)"></button></td>
+		<td><button class="bitbox" id="100" onClick="buttonEvent(this.id)"></button></td>
+	</tr>
+</table>
+				
+				
+				
+				</div>
+				<button  class="button-2 hidden" type="button" onclick="reversePadlock()">Back</button> 
 			</div>
 		</div>
 	</body>

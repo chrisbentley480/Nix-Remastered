@@ -6,7 +6,7 @@ This project is in the process of being ported from PHP to Node.js and also rema
 NixMsg is a messenger service, people can sign up and message each other for free.  
 
 ### How does it work?   
-Users can login with a username, enter a password and a combination, this data is used to generate RSA keys on the fly, no keys are saved or need to be transported. The username and public key are sent to the server and stored when a user is created. Messages can be sent from one user to another, encrypted with a strong AES-256 key, which is then encrypted with the user's RSA keys. This forms a hybrid encryption model similar to PGP or any other known standards. The server logs a list of usernames, their associated keys, and a list of messages and the users associated.  
+Users can login with a username, enter a password and a combination, this data is used to generate RSA keys on the fly, no keys are saved or need to be transported. The username and public key are sent to the server and stored when a user is created. Messages can be sent from one user to another, encrypted with a strong AES-256 key, which is then encrypted with the user's RSA keys. This forms a hybrid encryption model similar to PGP or any other known standards. The server logs a list of usernames, their associated public keys, and a list of messages and the users associated.  
 
 ### Is it secure?  
 No. I mean ideally, but right now it is more of a proof of concept. Nothing here has been vetted by a cryptologist and i'm sure someone smart enough could break it. In fact i'd love if anyone found a way to break it. But even in it's current form i'm sure it would offer much more privacy than using facebook.   

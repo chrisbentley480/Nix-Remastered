@@ -74,22 +74,41 @@ function checkUser(){
 	if (stage!=1){return;}
 	
 	//Query server
-	var response=0;
 	
-	
-	$('#advancedBtn').show();
-	$('#continueBtn').show();
-	$('#passwordDiv').show();
-	if (!response){
-		//New user
-		$('#server-stat').text("Account does not exist - A new account will be created");
+	var data = {};
+	data.user = username;			
+	$.ajax({
+		type: 'POST',
+		data: JSON.stringify(data),
+		contentType: 'application/json',
+        url: 'http://localhost:3000/userExists',						
+        success: function(data) {
+				console.log('success');
+				console.log(JSON.stringify(data));
+				
+				var response=data.response;
+				
+				$('#advancedBtn').show();
+				$('#continueBtn').show();
+				$('#passwordDiv').show();
+				if (!response){
+					//New user
+					$('#server-stat').text("Account does not exist - A new account will be created");
 		
-	}else{
-		//User exists
-		$('#server-stat').text("Account exists - Attempt to login");
+				}else{
+					//User exists
+					$('#server-stat').text("Account exists - Attempt to login");
 		
-	}
-	
+				}
+				
+            },
+		error: function() {
+                  //Could not reach server - if you are using a custom endpoint please make sure it is correct
+				  alert("Could not reach server - if you are using a custom endpoint please make sure it is correct");
+				  //Display some error message
+        },
+    });
+
 }
 function reversePadlock(){
 	$("#padlock2").children().hide();
@@ -235,6 +254,47 @@ function validateUser(){
 	$('#padlock').addClass("padlockCollapse");  
 	$('#spacer-2').removeClass("grow-spacer-2"); 
 	$('#spacer-2').addClass("grow-spacer-3"); 
+	
+	
+	//Query server for cookie - attempt to decrypt it, and return result
+	//For simplicity reasons this step is currently skipped - it requires node.js to encrypt a file and will be done later
+	
+	var data = {};
+	data.user = username;			
+	$.ajax({
+		type: 'POST',
+		data: JSON.stringify(data),
+		contentType: 'application/json',
+        url: 'http://localhost:3000/userLogin',						
+        success: function(data) {
+				console.log('success');
+				console.log(JSON.stringify(data));
+				
+				var response=data.response;
+				
+				$('#advancedBtn').show();
+				$('#continueBtn').show();
+				$('#passwordDiv').show();
+				if (!response){
+					//New user
+					$('#server-stat').text("Account does not exist - A new account will be created");
+		
+				}else{
+					//User exists
+					$('#server-stat').text("Account exists - Attempt to login");
+		
+				}
+				
+            },
+		error: function() {
+                  //Could not reach server - if you are using a custom endpoint please make sure it is correct
+				  alert("Could not reach server - if you are using a custom endpoint please make sure it is correct");
+				  //Display some error message
+        },
+    });
+	
+	
+	
 	setTimeout(function(){
 		$('#padlock').removeClass("padlockCollapse"); 
 		$('#padlock').addClass("padlockExpand"); 

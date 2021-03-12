@@ -2,7 +2,13 @@
 Recreating old site with node
 
 ## Instructions
-Clone git repo - run  
-$ node server.js
+Clone git repo:    
+$ git clone https://github.com/chrisbentley480/Nix-Remastered.git  
 
-Go to localhost:3000
+Install express:  
+$ npm install express  
+
+Run server:  
+$ node server.js  
+
+Go to localhost:3000 in your browser

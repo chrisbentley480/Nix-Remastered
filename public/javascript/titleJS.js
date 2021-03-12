@@ -1,7 +1,7 @@
 var username="";
 var user_password="";
 var stage=0;
-
+var padlock="";
 
 function login(){
 	
@@ -39,6 +39,8 @@ function login(){
 	}, 2200);
 	
 	setTimeout(function(){
+		$('#password').addClass("passwordExpand-Set");  
+		
 		checkUser();
 	}, 3000);
 
@@ -91,6 +93,7 @@ function checkUser(){
 function reversePadlock(){
 	$("#padlock2").children().hide();
 	$('#padlock2').removeClass("padlockExpand-2"); 
+	$('#padlock2').removeClass("padlockExpand-Set-2"); 
 	$('#padlock2').addClass("padlockCollapse-2"); 
 	$('#spacer-2').removeClass("grow-spacer-3"); 
 	$('#spacer-2').addClass("grow-spacer-2"); 
@@ -104,18 +107,23 @@ function reversePadlock(){
 
 function generatePadlock(){
 	stage=2;
+	user_password=$('#passwordInput').val();
 	$("#password").children().hide();
 	$('#spacer-2').removeClass("grow-spacer-2");  
 	$('#spacer-2').addClass("shrink-spacer-2"); 
 	$("#password").addClass("passwordCollapse");
+	$("#password").removeClass("passwordExpand");
+	$("#password").removeClass("passwordExpand-Set");
 	setTimeout(function(){
 		$('#spacer-2').removeClass("shrink-spacer-2");  
 		$('#spacer-2').addClass("grow-spacer-2"); 
 		$('#padlock').removeClass("padlockCollapse");  
 		$('#padlock').addClass("padlockExpand");  
+		
 	}, 1000);
 	setTimeout(function(){
 		$('#padlock').children().show();
+		$('#padlock').addClass("padlockExpand-Set");  
 	}, 1600);
 	
 	
@@ -132,18 +140,59 @@ function generatePadlock(){
 
 function displayPadlock(){
 	
+	//MAKE SURE TO ADD CODE TO RESET PADLOCK BUTTONS!!
+	
+	
 	$("#padlock").children().hide();
 	$('#padlock').removeClass("padlockExpand");  
+	$('#padlock').removeClass("padlockExpand-Set");  
 	$('#padlock').addClass("padlockCollapse");  
 	$('#spacer-2').removeClass("grow-spacer-2"); 
 	$('#spacer-2').addClass("grow-spacer-3"); 
 	setTimeout(function(){
+		$('#padlock2').removeClass("padlockCollapse-2"); 
 		$('#padlock2').addClass("padlockExpand-2"); 
+		
+		
 	}, 1000);
 	setTimeout(function(){
 		$('#padlock2').children().show();
+		$("#padButtons").hide();
+		$('#padlock2').addClass("padlockExpand-Set-2"); 
+
 	}, 1700);
+	setTimeout(function(){
+		$("#padButtons").css("display", "flex");
+
+	}, 1800);
 	
+}
+
+
+function buttonEvent(id){
+
+	if (padlock==0){
+	//document.getElementById("combo").style.color= "black";
+	//document.getElementById("combo").innerText= "";
+	}
+	if (padlock<4){
+	$("#"+id).css('opacity', '0');
+	$("#"+id).prop("disabled",true);
+	//var frag = dec2bin(document.getElementById(id).innerHTML.charCodeAt(0))+dec2bin(id);
+	var frag="";
+	user_password=user_password+frag;
+	padlock++;
+	var foo="";
+	for (var i=0;i<padlock;i++){
+		foo+="*";
+	}
+	//document.getElementById("combo").innerText= foo;
+	if (padlock==4){
+	//	document.getElementById("fs1").style.display = "inline";
+	$("#padlockSubmission").show();
+	
+	}
+	}
 }
 
 

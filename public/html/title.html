@@ -37,8 +37,8 @@
 			</div>
 			<div id="padlock2">
 				<div class="title-card-1 hidden centeredFlex"><b>Padlock</b></div>
+				<div class="title-card-2 hidden centeredFlex"><b>Select 4 tiles (order matters - you must remember them to login)</b></div>
 				<div id="bigLock" class="hidden">
-				
 				<table class="table " id="padlock" >
     <tr><td><button class="bitbox" id="1" onClick="buttonEvent(this.id)">a</button></td>
 		<td><button class="bitbox" id="2" onClick="buttonEvent(this.id)">W</button></td>
@@ -151,10 +151,12 @@
 	</tr>
 </table>
 				
-				
+				</div>
+				<div id="padButtons" class="padlockButtons hidden">
+				<button  id="padlockSubmission"class="button-3 hidden" type="button" onclick="generateKeys()">Generate Keys</button> 
+				<button  class="button-3 " type="button" onclick="reversePadlock()">Back</button> 
 				
 				</div>
-				<button  class="button-2 hidden" type="button" onclick="reversePadlock()">Back</button> 
 			</div>
 		</div>
 	</body>

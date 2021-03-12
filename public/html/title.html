@@ -31,15 +31,15 @@
 			<button  class="button-2 hidden" type="button" onclick="reverseLogin()">Back</button> 
 			</div>
 			<div id="padlock">
-				<div class="title-card-1 hidden centeredFlex"><b>Generating Padlock</b></div>
-				 <img class="hidden"src="assets/load.gif" alt="loading..."> 
+				<div id="loadingMessage" class="title-card-1 hidden centeredFlex"><b>Generating Padlock</b></div>
+				 <img id="msgImage"class="hidden"src="assets/load.gif" alt="loading..."> 
 				<div class="title-card-3 hidden"><b>This may take a moment</b></div>
 			</div>
 			<div id="padlock2">
 				<div class="title-card-1 hidden centeredFlex"><b>Padlock</b></div>
 				<div class="title-card-2 hidden centeredFlex"><b>Select 4 tiles (order matters - you must remember them to login)</b></div>
 				<div id="bigLock" class="hidden">
-				<table class="table " id="padlock" >
+				<table class="table " id="padlock"style="width:100%;height:443px;" >
     <tr><td><button class="bitbox" id="1" onClick="buttonEvent(this.id)">a</button></td>
 		<td><button class="bitbox" id="2" onClick="buttonEvent(this.id)">W</button></td>
 		<td><button class="bitbox" id="3" onClick="buttonEvent(this.id)">^</button></td>

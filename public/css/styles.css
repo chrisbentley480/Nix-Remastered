@@ -73,6 +73,7 @@
 	
 }
 
+
 .passwordCollapse{
 	height:0% !important;
 	width:0% !important;
@@ -195,12 +196,15 @@
 }
 
 .table{
-	
-	
 	table-layout:fixed;
     width:100%;
-	height:100%;
+	height:443px;
 }
+#bigLock{
+	width:100%;
+	height:443px;
+}
+
 #title{
 	height:10%;
 	min-height:102px;
@@ -353,6 +357,10 @@
 }
 
 #passtitle{
+	font-weight:Bold;
+}
+
+#loadingMessage{
 	font-weight:Bold;
 }
 #login{

@@ -54,6 +54,7 @@ function reverseLogin(){
 	
 	$('#spacer-2').removeClass("grow-spacer-2");  
 	$('#password').removeClass("passwordExpand");
+	$('#password').removeClass("passwordExpand-Set");
 	$("#password").addClass("passwordCollapse");
 	
 		$('#title').removeClass("titleExpand"); 
@@ -142,7 +143,7 @@ function displayPadlock(){
 	
 	//MAKE SURE TO ADD CODE TO RESET PADLOCK BUTTONS!!
 	
-	
+	stage=3;
 	$("#padlock").children().hide();
 	$('#padlock').removeClass("padlockExpand");  
 	$('#padlock').removeClass("padlockExpand-Set");  
@@ -195,4 +196,107 @@ function buttonEvent(id){
 	}
 }
 
+function generateKeys(){
+	stage=4;
+	//This can have another loading screen
+		stage=2;
+	user_password=$('#passwordInput').val();
+	$("#padlock2").children().hide();
+	$('#spacer-2').removeClass("grow-spacer-2");  
+	$('#spacer-2').addClass("shrink-spacer-2"); 
+	$("#padlock2").addClass("padlockCollapse-2");
+	$("#padlock2").removeClass("padlockExpand-2");
+	$("#padlock2").removeClass("padlockExpand-Set-2");
+	setTimeout(function(){
+		$('#spacer-2').removeClass("shrink-spacer-2");  
+		$('#spacer-2').addClass("grow-spacer-2"); 
+		$('#padlock').removeClass("padlockCollapse");  
+		$('#padlock').addClass("padlockExpand");  
+		
+	}, 1000);
+	setTimeout(function(){
+		$('#padlock').children().show();
+		$('#loadingMessage').text("Generating RSA keys");
+		$('#padlock').addClass("padlockExpand-Set");  
+	}, 1600);
+	
+	
+	
+	setTimeout(function(){
+		validateUser()
+	}, 5000);
+
+}
+
+function validateUser(){
+	$("#padlock").children().hide();
+	$('#padlock').removeClass("padlockExpand");  
+	$('#padlock').removeClass("padlockExpand-Set");  
+	$('#padlock').addClass("padlockCollapse");  
+	$('#spacer-2').removeClass("grow-spacer-2"); 
+	$('#spacer-2').addClass("grow-spacer-3"); 
+	setTimeout(function(){
+		$('#padlock').removeClass("padlockCollapse"); 
+		$('#padlock').addClass("padlockExpand"); 
+		
+		
+	}, 1000);
+	setTimeout(function(){
+		$('#padlock').children().show();
+		$('#loadingMessage').text("Validating against server");
+		$('#padlock').addClass("padlockExpand-Set"); 
+
+	}, 1700);
+	
+	setTimeout(function(){
+		successfullLogin();
+	}, 5000);
+
+}
+
+function successfullLogin(){
+	$("#padlock").children().hide();
+	$('#padlock').removeClass("padlockExpand");  
+	$('#padlock').removeClass("padlockExpand-Set");  
+	$('#padlock').addClass("padlockCollapse");  
+	$('#spacer-2').removeClass("grow-spacer-2"); 
+	$('#spacer-2').addClass("grow-spacer-3"); 
+	setTimeout(function(){
+		$('#padlock').removeClass("padlockCollapse"); 
+		$('#padlock').addClass("padlockExpand"); 
+		
+		
+	}, 1000);
+	setTimeout(function(){
+		$('#padlock').children().show();
+		$('#loadingMessage').text("Login Successful!");
+		$('#msgImage').attr("src", "assets/check2.png");
+		$('#padlock').addClass("padlockExpand-Set"); 
+
+	}, 1700);
+	
+	setTimeout(function(){
+		openInterface()
+	}, 2800);
+	
+	//If user validated successfully then open UI
+
+}
+
+function failedLogin(){
+	
+	
+}
+
+
+function openInterface(){
+	$("#padlock").children().hide();
+	$('#padlock').removeClass("padlockExpand");  
+	$('#padlock').removeClass("padlockExpand-Set");  
+	$('#padlock').addClass("padlockCollapse");  
+	$('#spacer-2').removeClass("grow-spacer-2"); 
+	$('#spacer-2').addClass("grow-spacer-3"); 
+	//Re-arrange the UI and add contacts/messageUI/area to type and anything else needed
+	
+}
 

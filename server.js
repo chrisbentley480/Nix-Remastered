@@ -2,9 +2,20 @@
 var express = require('express');
 var app = express(); 
 var bodyParser = require('body-parser')
+var mysql = require('mysql');
+var fs = require('fs');
 var keys = require('./Keys');
+
 //Specify port
 const port = 3000
+
+// mysql connection config
+let connection = mysql.createConnection({
+		host:  keys.DATABASE_URL,
+		user: keys.PRIVATE_DATABASE_USER,
+		database: keys.PRIVATE_DATABASE_NAME,
+		password: keys.PRIVATE_DATABASE_PASSWORD
+});
 
 // Static Files
 app.use(express.static('public'));
@@ -20,19 +31,34 @@ app.get('', (req, res) => {
     res.sendFile(__dirname + '/public/html/title.html')
 })
 
-
-// Handle posts
-
+// Connect to DB - alternate handling?
+	connection.connect((err) => {
+	 if(err){
+		console.log('Error connecting to Db');
+		return;
+	 }
+	  console.log('Connection established');
+});
 
 //Query database to determine if user exists, respond 0 for no 1 for yes.
 app.post('/userExists', function(req, res){
 	var obj = {response:0};
 	
 	//Query server for existence of user
+	 console.log(req.body.user);
+	var edituserSQL =  "CALL userExists(?)";
+        connection.query(edituserSQL, [req.body.user], function(ERROR,RESULT) {
+                if (ERROR) {
+					console.log("SQL error");
+                } else {
+                    console.log("userExists result");
+					let result = JSON.parse(JSON.stringify(RESULT[0][0]));
+                    console.log(result.existing)
+                    obj.response = result.existing;
+					res.send(obj);
+                }
+            });
 	
-	console.log('body: ' + JSON.stringify(req.body));
-	
-	res.send(obj);
 });
 
 //Create cookie for user
@@ -95,4 +121,4 @@ app.post('/nixMessage', function(req, res){
 
 
 //Launch server
-app.listen(port, () => console.info(`App listening on port ${port}`))
+app.listen(port, () => console.info(`Server running on port ${port}`))

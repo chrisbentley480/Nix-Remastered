@@ -2,6 +2,36 @@
 
 
 
+CREATE TABLE Messages (
+  to_ varchar(255) NOT NULL,
+  from_ varchar(255) NOT NULL,
+  to_key varchar(255) NOT NULL,
+  from_key varchar(255) NOT NULL,
+  msg_ longtext NOT NULL,
+  time_ varchar(45) DEFAULT NULL
+);
+
+CREATE TABLE users (
+  username varchar(255) NOT NULL,
+  pubkey varchar(900) NOT NULL,
+  cookie varchar(255) DEFAULT NULL,
+  UNIQUE KEY _username (username),
+  UNIQUE KEY cookie_UNIQUE (cookie)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 CREATE TABLE `messages` (
   `to_` varchar(255) NOT NULL,
   `from_` varchar(255) NOT NULL,

@@ -1,2 +1,0 @@
-var DATABASE_URL="localhost:3000";
-var PRIVATE_DATABASE_PASSWORD="hunter1";

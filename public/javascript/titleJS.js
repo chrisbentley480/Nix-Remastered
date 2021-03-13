@@ -258,7 +258,7 @@ function validateUser(){
 	
 	//Query server for cookie - attempt to decrypt it, and return result
 	//For simplicity reasons this step is currently skipped - it requires node.js to encrypt a file and will be done later
-	
+	/*
 	var data = {};
 	data.user = username;			
 	$.ajax({
@@ -292,7 +292,7 @@ function validateUser(){
 				  //Display some error message
         },
     });
-	
+	*/
 	
 	
 	setTimeout(function(){

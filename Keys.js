@@ -1,0 +1,2 @@
+var DATABASE_URL="test";
+var PRIVATE_DATABASE_PASSWORD="hunter1";

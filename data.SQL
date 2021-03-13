@@ -59,6 +59,7 @@ end
 
 //
 DELIMITER ;
+
 DELIMITER //
 
 CREATE  PROCEDURE `createCookie`(IN user1 varchar(255), IN cookie1 varchar(255))
@@ -159,4 +160,3 @@ end
 
 //
 DELIMITER ;
-DELIMITER //

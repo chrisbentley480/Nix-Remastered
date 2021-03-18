@@ -3,6 +3,7 @@ var user_password="";
 var stage=0;
 var padlock="";
 var friend="";
+var createFlag=0;
 
 function login(){
 	
@@ -86,17 +87,19 @@ function checkUser(){
 				console.log('success');
 				console.log(JSON.stringify(data));
 				
-				var response=data.response;
-				
+				var response=parseInt(data.response);
+				console.log('User exist response:'+response);
 				$('#advancedBtn').show();
 				$('#continueBtn').show();
 				$('#passwordDiv').show();
 				if (!response){
 					//New user
+					createFlag=1;
 					$('#server-stat').text("Account does not exist - A new account will be created");
 		
 				}else{
 					//User exists
+					createFlag=0;
 					$('#server-stat').text("Account exists - Attempt to login");
 		
 				}
@@ -110,6 +113,19 @@ function checkUser(){
     });
 
 }
+
+function resetPadlock(){
+	
+	for(var i=1;i<101;i++){
+
+		$("#"+i).css('opacity', '1');
+		$("#"+i).prop("disabled",false);
+		
+	}
+	
+}
+
+
 function reversePadlock(){
 	$("#padlock2").children().hide();
 	$('#padlock2').removeClass("padlockExpand-2"); 
@@ -125,9 +141,14 @@ function reversePadlock(){
 }
 
 
+//Function to display "generating padlock"
 function generatePadlock(){
+	
+	//Update data
 	stage=2;
 	user_password=$('#passwordInput').val();
+	
+	
 	$("#password").children().hide();
 	$('#spacer-2').removeClass("grow-spacer-2");  
 	$('#spacer-2').addClass("shrink-spacer-2"); 
@@ -142,14 +163,25 @@ function generatePadlock(){
 		
 	}, 1000);
 	setTimeout(function(){
-		$('#padlock').children().show();
 		$('#padlock').addClass("padlockExpand-Set");  
+		$('#padlock').children().show();
+		
 	}, 1600);
 	
 	
 	//Generate padlock here
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	setTimeout(function(){
-		displayPadlock()
+		resetPadlock();
+		displayPadlock();
 	}, 2500);
 	
 	
@@ -176,15 +208,16 @@ function displayPadlock(){
 		
 	}, 1000);
 	setTimeout(function(){
-		$('#padlock2').children().show();
+		
 		$("#padButtons").hide();
 		$('#padlock2').addClass("padlockExpand-Set-2"); 
+		
 
-	}, 1700);
+	}, 1400);
 	setTimeout(function(){
 		$("#padButtons").css("display", "flex");
-
-	}, 1800);
+		$('#padlock2').children().show();
+	}, 2200);
 	
 }
 
@@ -308,9 +341,29 @@ function validateUser(){
 
 	}, 1700);
 	
-	setTimeout(function(){
-		successfullLogin();
-	}, 5000);
+	if (createFlag){
+		//Create a user
+		//PUBLIC KEY AND USERNAME REQUIRED BY THIS POINT
+		
+	}
+	
+	//Request a cookie
+	
+		
+	var loginSucess=0;	
+	
+	if (loginSucess){
+		setTimeout(function(){
+			successfullLogin();
+		}, 5000);
+		
+	}else{
+		setTimeout(function(){
+			failedLogin();
+		}, 5000);
+		
+	
+	}
 
 }
 
@@ -344,7 +397,35 @@ function successfullLogin(){
 }
 
 function failedLogin(){
+	$("#padlock").children().hide();
+	$('#padlock').removeClass("padlockExpand");  
+	$('#padlock').removeClass("padlockExpand-Set");  
+	$('#padlock').addClass("padlockCollapse");  
+	$('#spacer-2').removeClass("grow-spacer-2"); 
+	$('#spacer-2').addClass("grow-spacer-3"); 
+	setTimeout(function(){
+		$('#padlock').removeClass("padlockCollapse"); 
+		$('#padlock').addClass("padlockExpand"); 
+		
+		
+	}, 1000);
+	setTimeout(function(){
+		$('#padlock').children().show();
+		$('#loadingMessage').text("Login Failure!");
+		$('#msgImage').attr("src", "assets/error.png");
+		$('#padlock').addClass("padlockExpand-Set"); 
+
+	}, 1700);
 	
+	setTimeout(function(){
+		$("#padlock").children().hide();
+		$('#padlock').removeClass("padlockExpand");  
+		$('#padlock').removeClass("padlockExpand-Set");  
+		$('#padlock').addClass("padlockCollapse");  
+		login();
+	}, 3500);
+	
+	//If user validated successfully then open UI
 	
 }
 

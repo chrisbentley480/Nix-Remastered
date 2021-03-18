@@ -51,9 +51,10 @@ app.post('/userExists', function(req, res){
                 if (ERROR) {
 					console.log("SQL error");
                 } else {
-                    console.log("userExists result");
+                    
 					let result = JSON.parse(JSON.stringify(RESULT[0][0]));
                     console.log(result.existing)
+					console.log("userExists result: "+result.existing);
                     obj.response = result.existing;
 					res.send(obj);
                 }
@@ -73,6 +74,29 @@ app.post('/userLogin', function(req, res){
 	
 	res.send(obj);
 });
+
+
+//Attempt to add a new username and public key to the server manifest
+app.post('/userCreate', function(req, res){
+	var obj = {response:0};
+	
+	//Query server for existence of user
+	 console.log(req.body.user);
+	var edituserSQL =  "CALL publicUser(?,?)";
+        connection.query(edituserSQL, [req.body.username,req.body.publicKey], function(ERROR,RESULT) {
+                if (ERROR) {
+					console.log("SQL error");
+                } else {
+                    console.log("userCreate result");
+					//let result = JSON.parse(JSON.stringify(RESULT[0][0]));
+                    //console.log(result.existing)
+                    //obj.response = result.existing;
+					res.send(obj);
+                }
+            });
+	
+});
+
 
 //Takes a username and a cookie, validates login, queries server for all messages, and returns to user. 
 app.post('/fetchMessages', function(req, res){

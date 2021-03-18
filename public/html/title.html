@@ -8,6 +8,7 @@
 	</head>
 	<body>
 		<script src="javascript/titleJS.js"></script>
+		<script src="javascript/mathFunctions.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 		<div class="windowContainer">
 			
@@ -83,12 +84,12 @@
 			</div>
 			<div id="padlock">
 				<div id="loadingMessage" class="title-card-1 hidden centeredFlex"><b>Generating Padlock</b></div>
-				 <img id="msgImage"class="hidden"src="assets/load.gif" alt="loading..."> 
+				 <div id="msgImage"class="hidden" > </div>
 				<div class="title-card-3 hidden"><b>This may take a moment</b></div>
 			</div>
 			<div id="padlock2">
 				<div class="title-card-1 hidden centeredFlex"><b>Padlock</b></div>
-				<div class="title-card-2 hidden centeredFlex"><b>Select 4 tiles (order matters - you must remember them to login)</b></div>
+				<div class="title-card-2 hidden centeredFlex"><b>Select 4 or more tiles (order matters - you must remember them to login)</b></div>
 				<div id="bigLock" class="hidden">
 				<table class="table " id="padlock"style="width:100%;height:443px;" >
     <tr><td><button class="bitbox" id="1" onClick="buttonEvent(this.id)">a</button></td>

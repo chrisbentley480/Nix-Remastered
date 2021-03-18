@@ -1,9 +1,12 @@
 var username="";
 var user_password="";
 var stage=0;
-var padlock="";
+var padlock=0;
+var padlockString="";
 var friend="";
 var createFlag=0;
+
+var debug=0; //0 - disabled; 1 - enabled (print to console)
 
 function login(){
 	
@@ -49,7 +52,7 @@ function login(){
 
 function reverseLogin(){
 	username="";
-		 
+    user_password="";
 	stage=0;
 	$("#password").children().hide();
 	
@@ -71,11 +74,10 @@ function reverseLogin(){
 	
 }
 
+//Function to query server to check if user exists
 function checkUser(){
 	if (stage!=1){return;}
-	
 	//Query server
-	
 	var data = {};
 	data.user = username;			
 	$.ajax({
@@ -84,11 +86,12 @@ function checkUser(){
 		contentType: 'application/json',
         url: 'http://localhost:3000/userExists',						
         success: function(data) {
-				console.log('success');
-				console.log(JSON.stringify(data));
-				
 				var response=parseInt(data.response);
-				console.log('User exist response:'+response);
+				if (debug){
+					console.log('success');
+					console.log(JSON.stringify(data));
+					console.log('User exist response:'+response);
+				}
 				$('#advancedBtn').show();
 				$('#continueBtn').show();
 				$('#passwordDiv').show();
@@ -96,14 +99,11 @@ function checkUser(){
 					//New user
 					createFlag=1;
 					$('#server-stat').text("Account does not exist - A new account will be created");
-		
 				}else{
 					//User exists
 					createFlag=0;
 					$('#server-stat').text("Account exists - Attempt to login");
-		
 				}
-				
             },
 		error: function() {
                   //Could not reach server - if you are using a custom endpoint please make sure it is correct
@@ -111,17 +111,17 @@ function checkUser(){
 				  //Display some error message
         },
     });
-
 }
 
+//Function to reset the padlock
 function resetPadlock(){
 	
 	for(var i=1;i<101;i++){
-
 		$("#"+i).css('opacity', '1');
 		$("#"+i).prop("disabled",false);
-		
 	}
+	padlock=0;
+	padlockString="";
 	
 }
 
@@ -168,27 +168,57 @@ function generatePadlock(){
 		
 	}, 1600);
 	
-	
+	setTimeout(function(){
 	//Generate padlock here
 	
+	//Take username+password
+	var padlockSeed = username+user_password;
+	
+	var padlockHasher = xmur3(padlockSeed);
 	
 	
+	//Hash-cycle: 500 million cycles
+	//TODO: figure out a way to do this without blocking UI thread
+	for (var i=0;i<500000000;i++){
+		padlockHasher();
+		
+	}
+	
+	//Seed PRNG
+	var padlockPRNG = sfc32(padlockHasher(),padlockHasher(),padlockHasher(),padlockHasher());
+	
+	//Cycle the PRNG a million cycles
+	for (var i=0;i<1000000;i++){
+		padlockPRNG();
+	}
 	
 	
+	//Set padlock
+	for (var i=1;i<101;i++){
+		//Get a printable character
+		var num =Math.floor(((padlockPRNG()*1000) % 95+33));
+		$("#"+i).html(String.fromCharCode(num));
+		//WEIRD ISSUE - COLORS NOT CONSISTANT
+		console.log("color");
+		$("#"+i).css('background',"#"+Math.floor(padlockPRNG()*16777215).toString(16));
+		
+	}
 	
 	
-	
-	
-	setTimeout(function(){
-		resetPadlock();
-		displayPadlock();
-	}, 2500);
-	
-	
-	
-	
-	
+	resetPadlock();
+	displayPadlock();
+		
+	}, 1700);
 }
+
+
+function workerPadlock(){
+	// figure out way to offload javascript to stop UI from being blocked??
+}
+
+
+
+
 
 function displayPadlock(){
 	
@@ -228,7 +258,7 @@ function buttonEvent(id){
 	//document.getElementById("combo").style.color= "black";
 	//document.getElementById("combo").innerText= "";
 	}
-	if (padlock<4){
+	
 	$("#"+id).css('opacity', '0');
 	$("#"+id).prop("disabled",true);
 	//var frag = dec2bin(document.getElementById(id).innerHTML.charCodeAt(0))+dec2bin(id);
@@ -240,12 +270,12 @@ function buttonEvent(id){
 		foo+="*";
 	}
 	//document.getElementById("combo").innerText= foo;
-	if (padlock==4){
+	if (padlock>=4){
 	//	document.getElementById("fs1").style.display = "inline";
 	$("#padlockSubmission").show();
 	
 	}
-	}
+	
 }
 
 function generateKeys(){

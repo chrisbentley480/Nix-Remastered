@@ -50,11 +50,11 @@ app.post('/userExists', function(req, res){
 		if (ERROR) { 
 			console.log("SQL error"); 
 		} else {
-		let result = JSON.parse(JSON.stringify(RESULT[0][0]));
+			let result = JSON.parse(JSON.stringify(RESULT[0][0]));
 			obj.response = result.existing;
 			res.send(obj);
-        }
-    });
+		}
+	});
 });
 
 //Create cookie for user

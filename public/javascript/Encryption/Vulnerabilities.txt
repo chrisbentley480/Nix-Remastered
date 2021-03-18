@@ -1,0 +1,13 @@
+This is an old JS library and likely has many problems:
+
+1) This uses ArcFour stream cypher - wikipedia seems to indicate this is a vulnerable cypher. I am not knowledgeable enough to analyze it's use properly, or to replace it with something more secure. It is used as a PRNG and likely is vulnerable.
+
+2) I use xmur3 and sfc32 functions to overwrite ArcFour's seeding - thus making it deterministic (based on an input seed.) Both the algorithms used and my poor implementation are likely vulnerable.
+
+3) SHA-1 (outdated and very vulnerable) is in my library for some reason and I don't think its used but I haven't tried deleting it yet. If it is in use it is vulnerable
+
+4) largeAES.js should be good but I have not vetted anything inside of it
+
+5) jsbn and jsbn2 both contain many functions I have not examined
+
+6) rsa and rsa2 both go over my knowledge of cryptographic operations and I have not examined any of their operations

@@ -9,6 +9,12 @@
 	<body>
 		<script src="javascript/titleJS.js"></script>
 		<script src="javascript/mathFunctions.js"></script>
+		<script language="JavaScript" type="text/javascript" src="javascript/Encryption/jsbn.js"></script>
+		<script language="JavaScript" type="text/javascript" src="javascript/Encryption/jsbn2.js"></script>
+		<script language="JavaScript" type="text/javascript" src="javascript/Encryption/prng4.js"></script>
+		<script language="JavaScript" type="text/javascript" src="javascript/Encryption/rng.js"></script>
+		<script language="JavaScript" type="text/javascript" src="javascript/Encryption/rsa.js"></script>
+		<script language="JavaScript" type="text/javascript" src="javascript/Encryption/rsa2.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 		<div class="windowContainer">
 			
@@ -84,8 +90,8 @@
 			</div>
 			<div id="padlock">
 				<div id="loadingMessage" class="title-card-1 hidden centeredFlex"><b>Generating Padlock</b></div>
-				 <div id="msgImage"class="hidden" > </div>
-				<div class="title-card-3 hidden"><b>This may take a moment</b></div>
+				 <img id="msgImage"class="hidden"src="assets/load.gif" > </img>
+				<div id="loadingMessageSub"class="title-card-3 hidden"><b>This may take a moment</b></div>
 			</div>
 			<div id="padlock2">
 				<div class="title-card-1 hidden centeredFlex"><b>Padlock</b></div>

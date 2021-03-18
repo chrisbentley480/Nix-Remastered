@@ -1,3 +1,5 @@
+
+//Site data
 var username="";
 var user_password="";
 var stage=0;
@@ -6,7 +8,15 @@ var padlockString="";
 var friend="";
 var createFlag=0;
 
-var debug=0; //0 - disabled; 1 - enabled (print to console)
+
+//Custom configuration variables
+var key_size=2048;//2048,3072,4096
+
+var server_url="http://localhost:3000"; // MAKE SURE THIS ENDPOINT IS CORRECT!!
+
+var debug=1; //0 - disabled; 1 - enabled (print to console)
+
+
 
 function login(){
 	
@@ -84,7 +94,7 @@ function checkUser(){
 		type: 'POST',
 		data: JSON.stringify(data),
 		contentType: 'application/json',
-        url: 'http://localhost:3000/userExists',						
+        url: server_url+'/userExists',						
         success: function(data) {
 				var response=parseInt(data.response);
 				if (debug){
@@ -173,7 +183,7 @@ function generatePadlock(){
 	
 	//Take username+password
 	var padlockSeed = username+user_password;
-	
+	console.log("Seed: "+padlockSeed);
 	var padlockHasher = xmur3(padlockSeed);
 	
 	
@@ -198,9 +208,12 @@ function generatePadlock(){
 		//Get a printable character
 		var num =Math.floor(((padlockPRNG()*1000) % 95+33));
 		$("#"+i).html(String.fromCharCode(num));
-		//WEIRD ISSUE - COLORS NOT CONSISTANT
-		console.log("color");
-		$("#"+i).css('background',"#"+Math.floor(padlockPRNG()*16777215).toString(16));
+		//Make a better method for colors
+		var colorSeed=Math.floor(padlockPRNG()*16777215).toString(16);
+		var colorSeed2=Math.floor(padlockPRNG()*16777215).toString(16);
+		var colored=colorSeed.substr(0,3)+colorSeed2.substr(0,3);
+		//console.log(colored);
+		$("#"+i).css('background',"#"+colored);
 		
 	}
 	
@@ -263,7 +276,11 @@ function buttonEvent(id){
 	$("#"+id).prop("disabled",true);
 	//var frag = dec2bin(document.getElementById(id).innerHTML.charCodeAt(0))+dec2bin(id);
 	var frag="";
-	user_password=user_password+frag;
+	//user_password=user_password+frag;
+	padlockString+=$("#"+id).html()+id.toString('base64')+rgb2hex($("#"+id).css('background-color')).toString('base64');
+	if (debug){
+		console.log("PADLOCKSTRING: " +padlockString);
+	}
 	padlock++;
 	var foo="";
 	for (var i=0;i<padlock;i++){
@@ -280,8 +297,8 @@ function buttonEvent(id){
 
 function generateKeys(){
 	stage=4;
-	//This can have another loading screen
-		stage=2;
+
+		
 	user_password=$('#passwordInput').val();
 	$("#padlock2").children().hide();
 	$('#spacer-2').removeClass("grow-spacer-2");  
@@ -299,14 +316,43 @@ function generateKeys(){
 	setTimeout(function(){
 		$('#padlock').children().show();
 		$('#loadingMessage').text("Generating RSA keys");
+		$('#loadingMessageSub').text("Key size: "+key_size+" - please be patient");
 		$('#padlock').addClass("padlockExpand-Set");  
 	}, 1600);
 	
-	
-	
 	setTimeout(function(){
-		validateUser()
-	}, 5000);
+		
+	var before = new Date();
+	var rsa = new RSAKey();
+	
+	var rsaSeed=username+user_password+padlockString
+	
+	if (debug){
+		console.log("RSA SEED: " +rsaSeed);
+	}
+
+	rsa.generate(key_size,"10001",rsaSeed);
+	console.info((rsa.n.toString(16)));
+	console.info(linebrk(rsa.d.toString(16),64));
+	console.info(linebrk(rsa.p.toString(16),64));
+	console.info(linebrk(rsa.q.toString(16),64));
+	console.info(linebrk(rsa.dmp1.toString(16),64));
+	console.info(linebrk(rsa.dmq1.toString(16),64));
+	console.info(linebrk(rsa.coeff.toString(16),64));
+	
+	//sessionStorage.setItem("sessionID",res2);
+	sessionStorage.setItem("USER",username);
+	sessionStorage.setItem('rsaKey_n', rsa.n.toString(16));
+	//sessionStorage.setItem('rsaKey_name', tof);
+	sessionStorage.setItem('rsaKey_e', "10001");
+	sessionStorage.setItem('rsaKey_d', rsa.d.toString(16));
+	sessionStorage.setItem('rsaKey_p', rsa.p.toString(16));
+	sessionStorage.setItem('rsaKey_q', rsa.q.toString(16));
+	sessionStorage.setItem('rsaKey_dmp1', rsa.dmp1.toString(16));
+	sessionStorage.setItem('rsaKey_dmq1', rsa.dmq1.toString(16));
+	sessionStorage.setItem('rsaKey_coeff',rsa.coeff.toString(16));
+		validateUser();
+	}, 2000);
 
 }
 
@@ -366,7 +412,12 @@ function validateUser(){
 	}, 1000);
 	setTimeout(function(){
 		$('#padlock').children().show();
-		$('#loadingMessage').text("Validating against server");
+		$('#loadingMessageSub').text("This may take a moment");
+		if (createFlag){
+			$('#loadingMessage').text("Submitting public key");
+		}else{
+			$('#loadingMessage').text("Validating against server");
+		}
 		$('#padlock').addClass("padlockExpand-Set"); 
 
 	}, 1700);
@@ -380,7 +431,7 @@ function validateUser(){
 	//Request a cookie
 	
 		
-	var loginSucess=0;	
+	var loginSucess=1;	
 	
 	if (loginSucess){
 		setTimeout(function(){
@@ -404,6 +455,13 @@ function successfullLogin(){
 	$('#padlock').addClass("padlockCollapse");  
 	$('#spacer-2').removeClass("grow-spacer-2"); 
 	$('#spacer-2').addClass("grow-spacer-3"); 
+	
+	//Wipe sensitive data (keys stored in session storage)
+	username="00000000000000000000000"
+	user_password="00000000000000000000000"
+	padlockString="00000000000000000000000"
+	
+	
 	setTimeout(function(){
 		$('#padlock').removeClass("padlockCollapse"); 
 		$('#padlock').addClass("padlockExpand"); 

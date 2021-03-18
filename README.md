@@ -18,7 +18,7 @@ Originally this was going to be a simple project for a class where I had to choo
 Clone git repo:      
 $ git clone https://github.com/chrisbentley480/Nix-Remastered.git  
 
-Install express packages: 
+Install express packages:   
 $ npm install express body-parser mysql  
 
 Run server:  

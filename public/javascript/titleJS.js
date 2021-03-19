@@ -8,13 +8,18 @@ var padlockString="";
 var friend="";
 var createFlag=0;
 
-
+//RSA key (stored in javascript runtime)
+var rsa;
+var encookie="";
 //Custom configuration variables
 var key_size=2048;//2048,3072,4096
 
 var server_url="http://localhost:3000"; // MAKE SURE THIS ENDPOINT IS CORRECT!!
 
 var debug=1; //0 - disabled; 1 - enabled (print to console)
+
+//Experimental cookie system
+var REALcookie="";
 
 
 
@@ -217,6 +222,7 @@ function generatePadlock(){
 		
 	}
 	
+	REALcookie=String(padlockHasher());
 	
 	resetPadlock();
 	displayPadlock();
@@ -266,29 +272,16 @@ function displayPadlock(){
 
 
 function buttonEvent(id){
-
-	if (padlock==0){
-	//document.getElementById("combo").style.color= "black";
-	//document.getElementById("combo").innerText= "";
-	}
 	
 	$("#"+id).css('opacity', '0');
 	$("#"+id).prop("disabled",true);
-	//var frag = dec2bin(document.getElementById(id).innerHTML.charCodeAt(0))+dec2bin(id);
 	var frag="";
-	//user_password=user_password+frag;
 	padlockString+=$("#"+id).html()+id.toString('base64')+rgb2hex($("#"+id).css('background-color')).toString('base64');
 	if (debug){
 		console.log("PADLOCKSTRING: " +padlockString);
 	}
 	padlock++;
-	var foo="";
-	for (var i=0;i<padlock;i++){
-		foo+="*";
-	}
-	//document.getElementById("combo").innerText= foo;
 	if (padlock>=4){
-	//	document.getElementById("fs1").style.display = "inline";
 	$("#padlockSubmission").show();
 	
 	}
@@ -323,7 +316,7 @@ function generateKeys(){
 	setTimeout(function(){
 		
 	var before = new Date();
-	var rsa = new RSAKey();
+	 rsa = new RSAKey();
 	
 	var rsaSeed=username+user_password+padlockString
 	
@@ -332,16 +325,18 @@ function generateKeys(){
 	}
 
 	rsa.generate(key_size,"10001",rsaSeed);
-	console.info((rsa.n.toString(16)));
-	console.info(linebrk(rsa.d.toString(16),64));
-	console.info(linebrk(rsa.p.toString(16),64));
-	console.info(linebrk(rsa.q.toString(16),64));
-	console.info(linebrk(rsa.dmp1.toString(16),64));
-	console.info(linebrk(rsa.dmq1.toString(16),64));
-	console.info(linebrk(rsa.coeff.toString(16),64));
+	if (debug){
+		console.info((rsa.n.toString(16)));
+		console.info(linebrk(rsa.d.toString(16),64));
+		console.info(linebrk(rsa.p.toString(16),64));
+		console.info(linebrk(rsa.q.toString(16),64));
+		console.info(linebrk(rsa.dmp1.toString(16),64));
+		console.info(linebrk(rsa.dmq1.toString(16),64));
+		console.info(linebrk(rsa.coeff.toString(16),64));
+	}
 	
-	//sessionStorage.setItem("sessionID",res2);
-	sessionStorage.setItem("USER",username);
+	/*sessionStorage.setItem("sessionID",res2);
+	//sessionStorage.setItem("USER",username);
 	sessionStorage.setItem('rsaKey_n', rsa.n.toString(16));
 	//sessionStorage.setItem('rsaKey_name', tof);
 	sessionStorage.setItem('rsaKey_e', "10001");
@@ -350,7 +345,7 @@ function generateKeys(){
 	sessionStorage.setItem('rsaKey_q', rsa.q.toString(16));
 	sessionStorage.setItem('rsaKey_dmp1', rsa.dmp1.toString(16));
 	sessionStorage.setItem('rsaKey_dmq1', rsa.dmq1.toString(16));
-	sessionStorage.setItem('rsaKey_coeff',rsa.coeff.toString(16));
+	sessionStorage.setItem('rsaKey_coeff',rsa.coeff.toString(16));*/
 		validateUser();
 	}, 2000);
 
@@ -422,15 +417,71 @@ function validateUser(){
 
 	}, 1700);
 	
+	
+	setTimeout(function(){
 	if (createFlag){
 		//Create a user
-		//PUBLIC KEY AND USERNAME REQUIRED BY THIS POINT
+		encookie=rsa.encrypt(REALcookie)
+		response = createUser(username,rsa.n.toString(16),encookie);
+	}else{
+		//Request cookie
 		
+		var data = {};
+		data.user = username;	
+		$.ajax({
+		type: 'POST',
+		data: JSON.stringify(data),
+		contentType: 'application/json',
+		url: server_url+'/fetchCookie',						
+		success: function(data) {
+		response=data.response;
+		if (debug){
+			console.log('success');
+			console.log(JSON.stringify(data));
+			console.log('cookie fetch response:'+response);
+		}
+		try{
+		var returnv=rsa.decrypt(response);
+		//alert (encookie);
+		//alert(response);
+		//alert(returnv + "\t"+REALcookie);
+		if (String(returnv)==String(REALcookie)){
+			successfullLogin();
+		}else{
+			failedLogin();
+		}
+		}catch(e){
+			alert(e);
+			failedLogin();
+		}
+				
+				//if (!response){
+					//Failure: User prob already exists
+					//alert("Server Failure: Does this username already exist?");
+					//failedLogin();
+					////return 0;
+					//createFlag=1;
+					//$('#server-stat').text("Account does not exist - A new account will be created");
+				//}else{
+					//User created!
+					//alert("Success! User created!");
+					//successfullLogin();
+					//return 1;
+					//createFlag=0;
+					//$('#server-stat').text("Account exists - Attempt to login");
+				//}
+            },
+		error: function() {
+                  //Could not reach server - if you are using a custom endpoint please make sure it is correct
+				  alert("Could not reach server - if you are using a custom endpoint please make sure it is correct");
+				  //Display some error message
+        },
+    });
 	}
-	
+	}, 1800);
 	//Request a cookie
 	
-		
+		/*
 	var loginSucess=1;	
 	
 	if (loginSucess){
@@ -442,10 +493,106 @@ function validateUser(){
 		setTimeout(function(){
 			failedLogin();
 		}, 5000);
-		
-	
-	}
+	}*/
+}
 
+
+function createUser(user,pubKey,cookie){
+	
+	var data = {};
+	data.user = user;	
+	data.key=pubKey;
+	data.cookie=cookie;
+	$.ajax({
+		type: 'POST',
+		data: JSON.stringify(data),
+		contentType: 'application/json',
+        url: server_url+'/cheapCreate',						
+        success: function(data) {
+				var response=parseInt(data.response);
+				if (debug){
+					console.log('success');
+					console.log(JSON.stringify(data));
+					console.log('User create response:'+response);
+				}
+				if (!response){
+					//Failure: User prob already exists
+					alert("Server Failure: Does this username already exist?");
+					failedLogin();
+					//return 0;
+					//createFlag=1;
+					//$('#server-stat').text("Account does not exist - A new account will be created");
+				}else{
+					//User created!
+					//alert("Success! User created!");
+					data = {};
+					data.user = username;	
+					$.ajax({
+					type: 'POST',
+					data: JSON.stringify(data),
+					contentType: 'application/json',
+					url: server_url+'/fetchCookie',						
+					success: function(data) {
+					response=data.response;
+					if (debug){
+						console.log('success');
+						console.log(JSON.stringify(data));
+						console.log('cookie fetch response:'+response);
+					}
+					try{
+					var returnv=rsa.decrypt(response);
+					//alert (encookie);
+					//alert(response);
+					//alert(returnv + "\t"+REALcookie);
+					if (String(returnv)==String(REALcookie)){
+						successfullLogin();
+					}else{
+						failedLogin();
+					}
+					}catch(e){
+						alert(e);
+						failedLogin();
+					}
+				
+				//if (!response){
+					//Failure: User prob already exists
+					//alert("Server Failure: Does this username already exist?");
+					//failedLogin();
+					////return 0;
+					//createFlag=1;
+					//$('#server-stat').text("Account does not exist - A new account will be created");
+				//}else{
+					//User created!
+					//alert("Success! User created!");
+					//successfullLogin();
+					//return 1;
+					//createFlag=0;
+					//$('#server-stat').text("Account exists - Attempt to login");
+				//}
+            },
+		error: function() {
+                  //Could not reach server - if you are using a custom endpoint please make sure it is correct
+				  alert("Could not reach server - if you are using a custom endpoint please make sure it is correct");
+				  //Display some error message
+        },
+    });
+					
+					//return 1;
+					//createFlag=0;
+					//$('#server-stat').text("Account exists - Attempt to login");
+				}
+            },
+		error: function() {
+                  //Could not reach server - if you are using a custom endpoint please make sure it is correct
+				  alert("Could not reach server - if you are using a custom endpoint please make sure it is correct");
+				  //Display some error message
+        },
+    });
+	
+
+	
+	
+	
 }
 
 function successfullLogin(){
@@ -455,11 +602,9 @@ function successfullLogin(){
 	$('#padlock').addClass("padlockCollapse");  
 	$('#spacer-2').removeClass("grow-spacer-2"); 
 	$('#spacer-2').addClass("grow-spacer-3"); 
+
 	
-	//Wipe sensitive data (keys stored in session storage)
-	username="00000000000000000000000"
-	user_password="00000000000000000000000"
-	padlockString="00000000000000000000000"
+	
 	
 	
 	setTimeout(function(){
@@ -479,6 +624,15 @@ function successfullLogin(){
 	setTimeout(function(){
 		openInterface()
 	}, 2800);
+	
+		
+	
+	
+		
+	//Wipe sensitive data (keys stored in session storage)
+	username="00000000000000000000000"
+	user_password="00000000000000000000000"
+	padlockString="00000000000000000000000"
 	
 	//If user validated successfully then open UI
 

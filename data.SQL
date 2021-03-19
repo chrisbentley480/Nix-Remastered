@@ -20,7 +20,25 @@ CREATE TABLE users (
 );
 
 
+DELIMITER //
 
+
+CREATE PROCEDURE cheapUser(IN in1 varchar(255),IN in2 longtext, IN in3 varchar(255))
+begin
+insert into users(username,pubKey,cookie) values (in1,in2,in3);
+end
+
+//
+DELIMITER ;
+DELIMITER //
+
+CREATE PROCEDURE fetchCookie(IN in1 varchar(255))
+begin
+select cookie from users where username=in1;
+end
+
+//
+DELIMITER ;
 
 
 

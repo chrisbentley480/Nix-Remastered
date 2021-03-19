@@ -71,6 +71,26 @@ app.post('/userLogin', function(req, res){
 });
 
 
+//fetch cookie
+app.post('/fetchCookie', function(req, res){
+	var obj = {response:''};
+	//Query server for existence of user
+	console.log(req.body.user);
+	var edituserSQL =  "CALL fetchCookie(?)";
+	connection.query(edituserSQL, [req.body.user], function(ERROR,results,fields) {
+		if (ERROR) { 
+			console.log("SQL error"); 
+		} else {
+			let result = JSON.parse(JSON.stringify(results[0][0]));
+			console.log("FETCH: "+result.cookie);
+			obj.response = result.cookie;
+			res.send(obj);
+		}
+	});
+});
+
+
+
 //Attempt to add a new username and public key to the server manifest
 app.post('/userCreate', function(req, res){
 	var obj = {response:0};
@@ -78,14 +98,37 @@ app.post('/userCreate', function(req, res){
 	//Query server for existence of user
 	 console.log(req.body.user);
 	var edituserSQL =  "CALL publicUser(?,?)";
-        connection.query(edituserSQL, [req.body.username,req.body.publicKey], function(ERROR,RESULT) {
+        connection.query(edituserSQL, [req.body.user,req.body.key], function(ERROR,RESULT) {
                 if (ERROR) {
 					console.log("SQL error");
+					res.send(obj);
                 } else {
                     console.log("userCreate result");
 					//let result = JSON.parse(JSON.stringify(RESULT[0][0]));
                     //console.log(result.existing)
-                    //obj.response = result.existing;
+                    obj.response = 1;
+					res.send(obj);
+                }
+            });
+	
+});
+
+//Attempt to add a new username and public key to the server manifest
+app.post('/cheapCreate', function(req, res){
+	var obj = {response:0};
+	
+	//Query server for existence of user
+	 console.log(req.body.user);
+	var edituserSQL =  "CALL cheapUser(?,?,?)";
+        connection.query(edituserSQL, [req.body.user,req.body.key,req.body.cookie], function(ERROR,RESULT) {
+                if (ERROR) {
+					console.log("SQL error");
+					res.send(obj);
+                } else {
+                    console.log("userCreate result");
+					//let result = JSON.parse(JSON.stringify(RESULT[0][0]));
+                    //console.log(result.existing)
+                    obj.response = 1;
 					res.send(obj);
                 }
             });

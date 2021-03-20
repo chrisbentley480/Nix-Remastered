@@ -1,6 +1,8 @@
 # Nix-Remastered
 This project is in the process of being ported from PHP to Node.js and also remade.
 
+##### License: MIT
+
 ## About  
 ### What is this site?  
 NixMsg is a messenger service, people can sign up and message each other for free.  

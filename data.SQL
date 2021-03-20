@@ -40,7 +40,15 @@ end
 //
 DELIMITER ;
 
+DELIMITER //
 
+CREATE  PROCEDURE `getPublic`(IN in1 varchar(255))
+begin
+select pubKey from users where username=in1;
+end
+
+//
+DELIMITER ;
 
 
 

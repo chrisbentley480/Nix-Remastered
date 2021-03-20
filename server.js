@@ -1,13 +1,14 @@
 // Imports
 var express = require('express');
-var app = express(); 
 var bodyParser = require('body-parser')
 var mysql = require('mysql');
-var fs = require('fs');
 var keys = require('./Keys');
 
 //Specify port
 const port = 3000
+
+//Create express app
+var app = express(); 
 
 // mysql connection config
 let connection = mysql.createConnection({
@@ -16,6 +17,19 @@ let connection = mysql.createConnection({
 		database: keys.PRIVATE_DATABASE_NAME,
 		password: keys.PRIVATE_DATABASE_PASSWORD
 });
+
+
+//Initalize Server-side RSA (required for generating login cookies)
+const NodeRSA = require('node-rsa');
+const key = new NodeRSA();
+
+//Set padding pkcs1
+const options = {
+  encryptionScheme: {
+    scheme:'pkcs1'
+  }
+};
+key.setOptions(options);
 
 // Static Files
 app.use(express.static('public'));
@@ -57,82 +71,70 @@ app.post('/userExists', function(req, res){
 	});
 });
 
-//Create cookie for user
-app.post('/userLogin', function(req, res){
-	var obj = {cookie:0};
-	
-	//Ideally, this step does the following: Generates a cookie, takes the public cookie of the user and encrypts the cookie, then sends it back.
-	//For now, it just assumes their login is correct and gives them an unencrypted cookie, this isn't as dangerous as you might think because 
-	//if you have the wrong password, you will just get encrypted junk.
-	
-	console.log('body: ' + JSON.stringify(req.body));
-	
-	res.send(obj);
-});
-
-
-//fetch cookie
+//Fetch cookie from sever and encrypt with user's public key.
+//This is the request to login
 app.post('/fetchCookie', function(req, res){
+	//Fetch user's public key and then user's cookie. This should be combined into 1 call for effeciency later.
 	var obj = {response:''};
-	//Query server for existence of user
-	console.log(req.body.user);
-	var edituserSQL =  "CALL fetchCookie(?)";
+	var edituserSQL =  "CALL getPublic(?)";
 	connection.query(edituserSQL, [req.body.user], function(ERROR,results,fields) {
 		if (ERROR) { 
 			console.log("SQL error"); 
 		} else {
 			let result = JSON.parse(JSON.stringify(results[0][0]));
-			console.log("FETCH: "+result.cookie);
-			obj.response = result.cookie;
-			res.send(obj);
+			let pubKey=result.pubKey;
+			edituserSQL =  "CALL fetchCookie(?)";
+			connection.query(edituserSQL, [req.body.user], function(ERROR,results,fields) {
+				if (ERROR) { 
+					console.log("SQL error"); 
+				} else {
+					result = JSON.parse(JSON.stringify(results[0][0]));
+					console.log("FETCH: "+result.cookie);
+					var buffer = Buffer.from(result.cookie);
+						//Activate the public key
+						key.importKey({
+							n: Buffer.from(pubKey, 'hex'),
+							e: 65537,
+						}, 'components-public');
+					obj.response = key.encrypt(buffer,'buffer', 'hex').toString('hex');;
+					res.send(obj);
+				}
+			});
 		}
 	});
 });
 
 
 
-//Attempt to add a new username and public key to the server manifest
-app.post('/userCreate', function(req, res){
-	var obj = {response:0};
-	
-	//Query server for existence of user
-	 console.log(req.body.user);
-	var edituserSQL =  "CALL publicUser(?,?)";
-        connection.query(edituserSQL, [req.body.user,req.body.key], function(ERROR,RESULT) {
-                if (ERROR) {
-					console.log("SQL error");
-					res.send(obj);
-                } else {
-                    console.log("userCreate result");
-					//let result = JSON.parse(JSON.stringify(RESULT[0][0]));
-                    //console.log(result.existing)
-                    obj.response = 1;
-					res.send(obj);
-                }
-            });
-	
-});
+
 
 //Attempt to add a new username and public key to the server manifest
 app.post('/cheapCreate', function(req, res){
 	var obj = {response:0};
-	
-	//Query server for existence of user
-	 console.log(req.body.user);
-	var edituserSQL =  "CALL cheapUser(?,?,?)";
-        connection.query(edituserSQL, [req.body.user,req.body.key,req.body.cookie], function(ERROR,RESULT) {
-                if (ERROR) {
-					console.log("SQL error");
-					res.send(obj);
-                } else {
-                    console.log("userCreate result");
-					//let result = JSON.parse(JSON.stringify(RESULT[0][0]));
-                    //console.log(result.existing)
-                    obj.response = 1;
-					res.send(obj);
-                }
-            });
-	
+	//Activate the public key
+	key.importKey({
+		n: Buffer.from(req.body.key, 'hex'),
+		e: 65537,
+	}, 'components-public');
+	var token="";
+	//Create user's cookie
+	require('crypto').randomBytes(48, function(err, buffer) {
+		token = buffer.toString('hex');
+		console.log("Generating user "+req.body.user+" cookie: "+token);
+		//Query server for existence of user
+		console.log(req.body.user);
+		var edituserSQL =  "CALL cheapUser(?,?,?)";
+		connection.query(edituserSQL, [req.body.user,req.body.key,token], function(ERROR,RESULT) {
+			if (ERROR) {
+				console.log("SQL error");
+				res.send(obj);
+			} else {
+				console.log("User Created");
+				obj.response = 1;
+				res.send(obj);
+			}
+		});
+	});	
 });
 
 
@@ -176,6 +178,25 @@ app.post('/nixMessage', function(req, res){
 	//todo - requires messages with id
 	
 	res.send(obj);
+});
+
+
+//OLD VERSION OF CREATE USER
+app.post('/userCreate', function(req, res){
+	var obj = {response:0};
+	//Query server for existence of user
+	 console.log(req.body.user);
+	var edituserSQL =  "CALL publicUser(?,?)";
+        connection.query(edituserSQL, [req.body.user,req.body.key], function(ERROR,RESULT) {
+                if (ERROR) {
+					console.log("SQL error");
+					res.send(obj);
+                } else {
+                    console.log("userCreate result");
+                    obj.response = 1;
+					res.send(obj);
+                }
+            });
 });
 
 

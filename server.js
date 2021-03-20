@@ -1,3 +1,8 @@
+/* TODO
+1 - Verify cookie on db/compact queries
+
+*/
+
 // Imports
 var express = require('express');
 var bodyParser = require('body-parser')
@@ -71,6 +76,24 @@ app.post('/userExists', function(req, res){
 	});
 });
 
+//Request the public key of a user
+app.post('/fetchPublic', function(req, res){
+	var obj = {response:0};
+	//Query server for existence of user
+	console.log(req.body.user);
+	var edituserSQL =  "CALL getPublic(?)";
+	connection.query(edituserSQL, [req.body.user], function(ERROR,RESULT) {
+		if (ERROR) { 
+			console.log("SQL error"); 
+		} else {
+			let result = JSON.parse(JSON.stringify(RESULT[0][0]));
+			obj.response = result.pubKey;
+			res.send(obj);
+		}
+	});
+});
+
+
 //Fetch cookie from sever and encrypt with user's public key.
 //This is the request to login
 app.post('/fetchCookie', function(req, res){
@@ -104,10 +127,6 @@ app.post('/fetchCookie', function(req, res){
 	});
 });
 
-
-
-
-
 //Attempt to add a new username and public key to the server manifest
 app.post('/cheapCreate', function(req, res){
 	var obj = {response:0};
@@ -138,16 +157,66 @@ app.post('/cheapCreate', function(req, res){
 });
 
 
-//Takes a username and a cookie, validates login, queries server for all messages, and returns to user. 
-app.post('/fetchMessages', function(req, res){
+//Save user's contact/settings
+app.post('/updateMeta', function(req, res){
 	var obj = {response:0};
 	
-	
-	
-	console.log('body: ' + JSON.stringify(req.body));
-	
-	res.send(obj);
+	var edituserSQL =  "CALL fetchCookie(?)";
+	connection.query(edituserSQL, [req.body.user], function(ERROR,results,fields) {
+		if (ERROR) { 
+			console.log("SQL error"); 
+		} else {
+			console.log("Update meta, debug: "+results[0][0]);
+			let result = JSON.parse(JSON.stringify(results[0][0]));
+			var serverSide=result.cookie;
+			if (serverSide===req.body.cookie){
+				edituserSQL =  "CALL updateMeta(?,?)";
+				connection.query(edituserSQL, [req.body.user,req.body.meta], function(ERROR,results,fields) {
+					if (ERROR) { 
+						console.log("SQL error"); 
+					} else {
+						obj.response=1;
+						res.send(obj);
+					}
+				});
+			}else{
+				res.send(obj);
+			}
+		}
+	});
 });
+
+//Fetch user's personalization data
+app.post('/fetchMeta', function(req, res){
+	var obj = {response:0};
+	var edituserSQL =  "CALL fetchCookie(?)";
+	connection.query(edituserSQL, [req.body.user], function(ERROR,results,fields) {
+		if (ERROR) { 
+			console.log("SQL error"); 
+		} else {
+			result = JSON.parse(JSON.stringify(results[0][0]));
+			var serverSide=result.cookie;
+			if (serverSide===req.body.cookie){
+				edituserSQL =  "CALL fetchMeta(?)";
+				connection.query(edituserSQL, [req.body.user], function(ERROR,results,fields) {
+					if (ERROR) { 
+						console.log("SQL error"); 
+					} else {
+						result = JSON.parse(JSON.stringify(results[0][0]));
+						obj.response=result.meta;
+						res.send(obj);
+					}
+				});
+			}else{
+				res.send(obj);
+			}
+		}
+	});
+});
+
+
+
+
 
 //Takes two usernames and a cookie as well as two messages, validates login, posts messages. Ideally, one message could be used with two RSA AES-encrypted keys attached, writing this down this would be much simpler and I will try to rework the messages to do this.
 app.post('/sendMessages', function(req, res){
@@ -198,6 +267,9 @@ app.post('/userCreate', function(req, res){
                 }
             });
 });
+
+
+
 
 
 

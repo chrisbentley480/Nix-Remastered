@@ -15,8 +15,8 @@ CREATE TABLE users (
   username varchar(255) NOT NULL,
   pubkey varchar(900) NOT NULL,
   cookie varchar(255) DEFAULT NULL,
+  meta varchar(255) DEFAULT NULL,
   UNIQUE KEY _username (username),
-  UNIQUE KEY cookie_UNIQUE (cookie)
 );
 
 
@@ -30,6 +30,8 @@ end
 
 //
 DELIMITER ;
+
+
 DELIMITER //
 
 CREATE PROCEDURE fetchCookie(IN in1 varchar(255))
@@ -50,9 +52,30 @@ end
 //
 DELIMITER ;
 
+DELIMITER //
 
+CREATE PROCEDURE fetchMeta(IN in1 varchar(255))
+begin
+select meta from users where username=in1;
+end
 
+//
+DELIMITER ;
 
+DELIMITER //
+
+CREATE PROCEDURE updateMeta(IN in1 varchar(255),IN in2 longtext)
+begin
+UPDATE 
+    users
+SET 
+    meta = in2
+WHERE 
+    username = in1;
+end
+
+//
+DELIMITER ;
 
 
 

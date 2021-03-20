@@ -7,6 +7,7 @@ var padlock=0;
 var padlockString="";
 var friend="";
 var createFlag=0;
+var contacts=[];
 
 //RSA key (stored in javascript runtime)
 var rsa;
@@ -222,7 +223,7 @@ function generatePadlock(){
 		
 	}
 	
-	REALcookie=String(padlockHasher());
+	//REALcookie=String(padlockHasher());
 	
 	resetPadlock();
 	displayPadlock();
@@ -367,8 +368,8 @@ function validateUser(){
 	setTimeout(function(){
 	if (createFlag){
 		//Create a user
-		encookie=rsa.encrypt(REALcookie)
-		response = createUser(username,rsa.n.toString(16),encookie);
+		//encookie=rsa.encrypt(REALcookie)
+		response = createUser(username,rsa.n.toString(16));
 	}else{
 		//Request cookie
 		
@@ -388,11 +389,12 @@ function validateUser(){
 		}
 		try{
 					var returnv=rsa.decrypt(response);
+					REALcookie=returnv;
 					//alert (encookie);
 					//alert(response);
 					//alert(returnv + "\t"+REALcookie);
 
-					alert("Decrypt: "+returnv);
+					//alert("Decrypt: "+returnv);
 
 					if (returnv===null){
 						failedLogin();
@@ -415,12 +417,12 @@ function validateUser(){
 }
 
 
-function createUser(user,pubKey,cookie){
+function createUser(user,pubKey,){
 	
 	var data = {};
 	data.user = user;	
 	data.key=pubKey;
-	data.cookie=cookie;
+	//data.cookie=cookie;
 	$.ajax({
 		type: 'POST',
 		data: JSON.stringify(data),
@@ -455,7 +457,7 @@ function createUser(user,pubKey,cookie){
 					if (debug){
 						console.log('success');
 						console.log(JSON.stringify(data));
-						console.log('cookie fetch response:'+response);
+						//console.log('cookie fetch response:'+response);
 					}
 					try{
 					var returnv=rsa.decrypt(response);
@@ -463,8 +465,8 @@ function createUser(user,pubKey,cookie){
 					//alert(response);
 					//alert(returnv + "\t"+REALcookie);
 
-					alert("Decrypt: "+returnv);
-
+					//alert("Decrypt: "+returnv);
+					REALcookie=returnv;
 					if (returnv===null){
 						failedLogin();
 					}else{
@@ -551,7 +553,7 @@ function successfullLogin(){
 	
 		
 	//Wipe sensitive data (keys stored in session storage)
-	username="00000000000000000000000"
+	//username="00000000000000000000000"
 	user_password="00000000000000000000000"
 	padlockString="00000000000000000000000"
 	
@@ -600,11 +602,13 @@ function openInterface(){
 	$('#padlock').addClass("padlockCollapse");  
 	$('#spacer-2').removeClass("grow-spacer-2"); 
 	$('#spacer-2').addClass("grow-spacer-3"); 
+	loadPreference();
 	//Re-arrange the UI and add contacts/messageUI/area to type and anything else needed
 	setTimeout(function(){
 		$("#subWindowContainer").removeClass("hidden"); 
 		//$("#subWindowContainer").children().show();
 		$("#contactWindow").removeClass("hidden"); 
+		
 		
 	}, 1000);
 	
@@ -614,23 +618,136 @@ function openInterface(){
 }
 
 function addContact(){
-	
-	//check if user exists
-	var response=0;
-	
-	if (response){
-		
-		//is user duplicate?
-		
-		//if not, add new div
-		
-		
-	}else{
-		alert("User does not exist");
-	}
-	
-	
+
+	var data = {};
+		data.user = $("#addContactInput").val();	
+		$.ajax({
+		type: 'POST',
+		data: JSON.stringify(data),
+		contentType: 'application/json',
+		url: server_url+'/fetchPublic',						
+		success: function(data) {
+		response=data.response;
+		if (response!=0){
+			console.log("Add contact key: "+response);
+			var newContact={
+				'username': $("#addContactInput").val(),
+				'key':response
+			};
+			contacts.push(newContact);
+			//add the UI
+			$("#contactWindow").append('<div id="contactUser'+$("#addContactInput").val()+'" class="contactBox"><div class="title-card-3">'+$("#addContactInput").val()+'</div><button id="" class="button-4 " type="button" onclick="messageContact(\''+$("#addContactInput").val()+'\')">Message</button> <button id="removeContactButton" class="button-4 red" type="button" onclick="removeContact()">Remove</button> </div>');
+
+			//Save changes to preferences
+			savePreference();
+		}else{
+			alert("User not found");
+		}
+
+
+        },
+		error: function() {
+                  //Could not reach server - if you are using a custom endpoint please make sure it is correct
+				  alert("Could not reach server - if you are using a custom endpoint please make sure it is correct");
+				  //Display some error message
+        },
+    });
 }
+
+
+function loadPreference(){
+	var data = {};
+	data.user = username;	
+	data.cookie=REALcookie;
+	//data.meta=rsa.encrypt(JSON.stringify(contacts));
+	$.ajax({
+		type: 'POST',
+		data: JSON.stringify(data),
+		contentType: 'application/json',
+		url: server_url+'/fetchMeta',						
+		success: function(data) {
+		response=data.response;
+		if (response!=0){
+			var hybrid_total=response.split("<-|BEGIN AES|->");
+			var hybrid_rsa=rsa.decrypt(hybrid_total[0]);
+			let hybrid_tmp=hybrid_rsa.split(',');
+			let hybrid_aes= new Uint8Array(16);
+			for (let p1=0;p1<hybrid_aes.length;p1++){
+				hybrid_aes[p1]=parseInt(hybrid_tmp[p1]);
+			}
+
+		// When ready to decrypt the hex string, convert it back to bytes
+		var encryptedBytes = aesjs.utils.hex.toBytes(hybrid_total[1]);
+
+		// The counter mode of operation maintains internal state, so to
+		// decrypt a new instance must be instantiated.
+		var aesCtr = new aesjs.ModeOfOperation.ctr(hybrid_aes, new aesjs.Counter(5));
+		var decryptedBytes = aesCtr.decrypt(encryptedBytes);
+		// Convert our bytes back into text
+		var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+		contacts=JSON.parse(decryptedText);
+		$("#contactWindow").empty();
+		$("#contactWindow").append('<div id="contactTitle" class="contactTitle ">Contacts</div><div id="addContactWindow" class="addContactWindow"><div class="title-card-3">Add a contact</div><input id="addContactInput" class="title-card-3"></input><button id="addContactButton" class="button-4" type="button" onclick="addContact()">Connect</button></div>');
+		for (var i=0;i<contacts.length;i++){
+						$("#contactWindow").append('<div id="contactUser'+contacts[i].username+'" class="contactBox"><div class="title-card-3">'+contacts[i].username+'</div><button id="" class="button-4 " type="button" onclick="messageContact(\''+contacts[i].username+'\')">Message</button> <button id="removeContactButton" class="button-4 red" type="button" onclick="removeContact()">Remove</button> </div>');
+		}
+		}else{
+			alert("Contact/Preference load failure!");
+		}
+        },
+		error: function() {
+                  //Could not reach server - if you are using a custom endpoint please make sure it is correct
+				  alert("Could not reach server - if you are using a custom endpoint please make sure it is correct");
+				  //Display some error message
+        },
+    });
+}
+
+
+
+function savePreference(){
+
+	//Wrap up preferences into JSON, encrypt with AES, then with RSA and post to server
+
+	var array = new Uint8Array(16);
+	window.crypto.getRandomValues(array);
+	// Convert text to bytes
+	var textBytes = aesjs.utils.utf8.toBytes(JSON.stringify(contacts));
+	// The counter is optional, and if omitted will begin at 1
+	var aesCtr = new aesjs.ModeOfOperation.ctr(array, new aesjs.Counter(5));
+	var encryptedBytes = aesCtr.encrypt(textBytes);
+	// To print or store the binary data, you may convert it to hex
+	var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+	let final_meta=rsa.encrypt(array.toString())+"<-|BEGIN AES|->"+encryptedHex;
+
+	var data = {};
+	data.user = username;	
+	data.cookie=REALcookie;
+	data.meta=final_meta;
+	$.ajax({
+		type: 'POST',
+		data: JSON.stringify(data),
+		contentType: 'application/json',
+		url: server_url+'/updateMeta',						
+		success: function(data) {
+		response=data.response;
+		if (response!=0){
+		}else{
+			alert("Contact/Preference save failure!");
+		}
+        },
+		error: function() {
+                  //Could not reach server - if you are using a custom endpoint please make sure it is correct
+				  alert("Could not reach server - if you are using a custom endpoint please make sure it is correct");
+				  //Display some error message
+        },
+    });
+}
+
+
+
+
+
 
 
 function messageContact(newFriend){

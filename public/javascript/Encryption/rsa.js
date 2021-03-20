@@ -28,7 +28,7 @@ function byte2Hex(b) {
 function pkcs1pad2(s,n) {
 	 //console.info("does this never run?!?!");
   if(n < s.length + 11) { // TODO: fix for utf-8
-    alert("User does not exist in the manifest");
+    alert("Padding fail");
     return null;
   }
   var ba = new Array();

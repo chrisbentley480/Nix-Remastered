@@ -151,7 +151,7 @@
 	display:flex;
 	align-items: center;
 	justify-content: space-evenly;
-	flex-flow: row wrap;
+	flex-flow: row nowrap;
 }
 
 .contactWindow{

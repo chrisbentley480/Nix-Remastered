@@ -39,6 +39,39 @@
 	font-size:1.4em;
 }
 
+.msgRecieve{
+	word-break: break-word;
+	white-space: initial;
+	margin-top:10px;
+	display:inline-block;
+	padding:1em;
+	 max-width: 43%;
+	background:#5555bb;
+	  	-moz-border-radius: 5px;
+ -webkit-border-radius: 5px;
+ border-radius: 5px;
+  margin-left:10px;
+  margin-right:auto;
+	  margin-bottom:10px;
+}
+
+.msgSend{
+	word-break: break-word;
+	white-space: initial;
+		margin-top:10px;
+	display:inline-block;
+	padding:1em;
+	max-width: 45%;
+	background:#55bb55;
+	  	-moz-border-radius: 5px;
+ -webkit-border-radius: 5px;
+ border-radius: 5px;
+  margin-right:10px;
+  margin-left:auto;
+   margin-bottom:10px;
+	
+}
+
 
 
 #spacer{
@@ -345,6 +378,9 @@
 	max-height:90%;
 	background:#f0f0f5;
 	flex-grow:1;
+	  overflow-y: scroll;
+	display: flex;
+  flex-direction: column;
 }
 .textAreaSend{
 	

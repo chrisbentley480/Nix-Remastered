@@ -23,7 +23,7 @@ function buttonEvent(id){
 	
 }
 
-
+//Function to set focus to contact
 function messageContact(newFriend){
 	friend=newFriend;
 	$("#messageWindow").removeClass("hidden"); 
@@ -31,15 +31,20 @@ function messageContact(newFriend){
 	$("#contactWindow").children().removeClass("active");
 	$("#contactUser"+friend).addClass("active");
 
-	
+	//Load/decrypt messages here?
+
+
 }
 
 function removeContact(){
-	//make custom dialog
+	//make dialog confirming
 	
+	//Cycle through contacts to find contact - remove - call savePreference();
 	
-	alert("are you sure?")
-	alert("Do you want to remove messages from the server?");
+
+	savePreference();
+	//alert("are you sure?")
+	//alert("Do you want to remove messages from the server?");
 	
 	
 }
